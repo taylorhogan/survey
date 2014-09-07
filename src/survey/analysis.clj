@@ -3,7 +3,8 @@
 (ns survey.analysis
   (:require [clojure.java.io :as io]
             [clojure.string :as STR :only (join split)]
-            [clojure.set :as SET])
+            [clojure.set :as SET]
+           )
   )
 
 (use '(incanter core charts stats))
@@ -42,6 +43,13 @@
       )
     )
   )
+
+; remove columns of data based on a filtering method provided
+(defn filtered-data [d f]
+
+  )
+
+
 
 
 ; Extract column data
@@ -176,7 +184,14 @@
 
   )
 
+(defn worst [p data num-people]
+  (let [sorted-list (sort compare-data-pairs (generate-data-pairs p data num-people))
+        worst-score (first sorted-list)
+        the-worst (worst-score :same)]
 
+    (filter (fn [m] (= (m :same) the-worst)) sorted-list))
+
+  )
 (defn number-at-match-count [col count]
 
   (filter #(= count %) col)
@@ -239,11 +254,41 @@
 
 ; determine the corrleation between people based on matching answers
 
-(def apairs (all-pairs (range 1 num-people)))
-(def matches (find-matches apairs csv-data))
-(view (histogram matches :x-label "number of matches" :title "count"))
+;(def apairs (all-pairs (range 1 num-people)))
+;(def matches (find-matches apairs csv-data))
+;(view (histogram matches :x-label "number of matches" :title "Frequency of Answer Matches"))
 
 
 
 
+(defn get-column [c d]
+  (loop
+    [lines d
+     answer ()]
+
+     (if (empty? lines) answer
+       (recur (rest lines) (conj answer (get-column-data (first lines) c)))))
+  )
+
+
+(first csv-data)
+
+(get-column-data (first csv-data) 3)
+
+(csv-data 0)
+
+(def m (find-matches '((2 1 ) (2 3) (2 4) (2 5) (2 6) (2 7) (2 8) (2 9) (2 10)
+                      (2 11 ) (2 12)(2 13) (2 14) (2 15) (2 16) (2 17) (2 18) (2 19) (2 20)
+                      (2 21 ) (2 22)(2 23) (2 24) (2 25) (2 26) (2 27) (2 28) (2 29) (2 30)
+                      (2 31 ) (2 32)(2 33) (2 34) (2 35) (2 36) (2 37) (2 38) (2 39) (2 40)
+                      (2 41 ) (2 42)(2 43) (2 44) (2 45) (2 46) (2 47) (2 48) (2 49) (2 50)) csv-data))
+
+(view (bar-chart '(1 2 3 4 5 6 7 9 9 10
+                     11 12 13 14 15 16 17 18 19 20
+                     21 22 23 24 25 26 27 28 29 30
+                     31 32 33 34 35 36 37 38 39 40
+                     41 42 43 44 45 46 47 48 49 50) m :x-label "other person" :title "Answers in Common With Taylor"))
+
+
+(worst 5 csv-data 50)
 
